@@ -5,7 +5,7 @@ import apiRouter from "./routes";
 // import sampleQueueProducer from "./producers/sampleQueueProducer";
 import SampleWorker from "./workers/sampleWorker";
 import serverAdapter from "./config/bullBoardConfig";
-import runPython from "./containers/runPythonContainer";
+import runJava from "./containers/runJavaContainer";
 
 const app = express();
 
@@ -28,8 +28,18 @@ app.listen(serverConfig.PORT, () => {
     //     comapny: 'Google'
     // });
 
-    const code = `x = input()
-print("Value of x is: ", x)`
+    const code = `
+    import java.util.*;
+    public class Main {
+        public static void main(String args[]) {
+            Scanner sc = new Scanner(System.in);
+            int input = sc.nextInt();
+            for(int i=0;i<input;i++) {
+                System.out.print(i + " ");
+            }
+        }
+    }
+    `
 
-    runPython(code, '10');
+    runJava(code, '10');
 });
