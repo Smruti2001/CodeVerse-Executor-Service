@@ -2,9 +2,10 @@ import express from "express";
 import bodyParse from "body-parser";
 import serverConfig from "./config/serverConfig";
 import apiRouter from "./routes";
-import sampleQueueProducer from "./producers/sampleQueueProducer";
+// import sampleQueueProducer from "./producers/sampleQueueProducer";
 import SampleWorker from "./workers/sampleWorker";
 import serverAdapter from "./config/bullBoardConfig";
+import runPython from "./containers/runPythonContainer";
 
 const app = express();
 
@@ -21,9 +22,14 @@ app.listen(serverConfig.PORT, () => {
 
     SampleWorker('SampleQueue');
 
-    sampleQueueProducer('SampleJob', {
-        name: 'Smruti',
-        role: 'Developer',
-        comapny: 'Google'
-    });
+    // sampleQueueProducer('SampleJob', {
+    //     name: 'Smruti',
+    //     role: 'Developer',
+    //     comapny: 'Google'
+    // });
+
+    const code = `x = input()
+print("Value of x is: ", x)`
+
+    runPython(code, '10');
 });
