@@ -5,7 +5,8 @@ import apiRouter from "./routes";
 // import sampleQueueProducer from "./producers/sampleQueueProducer";
 import SampleWorker from "./workers/sampleWorker";
 import serverAdapter from "./config/bullBoardConfig";
-import runJava from "./containers/runJavaContainer";
+import SubmissionWorker from "./workers/submissionWorker";
+import submissionQueueProducer from "./producers/submissionQueueProducer";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.listen(serverConfig.PORT, () => {
     console.log(`Follow the link to access BullBoard dashboard: http://localhost:${serverConfig.PORT}/ui`);
 
     SampleWorker('SampleQueue');
+    SubmissionWorker('SubmissionQueue');
 
     // sampleQueueProducer('SampleJob', {
     //     name: 'Smruti',
@@ -40,6 +42,14 @@ app.listen(serverConfig.PORT, () => {
         }
     }
     `
+    const inputTestCases = '10';
 
-    runJava(code, '10');
+    submissionQueueProducer({
+        "1234": {
+            code,
+            inputTestCases,
+            language: 'JAVA'
+        }
+    })
+
 });
