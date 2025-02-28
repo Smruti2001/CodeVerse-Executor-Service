@@ -1,6 +1,7 @@
 import { Job } from "bullmq";
 import { SubmissionPayload } from "../types/sumissionPayload";
-import runJava from "../containers/runJavaContainer";
+import createCodeExecutor from "../utils/codeExecutorFactory";
+import { ExecutionResponse } from "../types/codeExecutorStrategy";
 
 export default class SubmissionJob {
     name: string;
@@ -14,11 +15,20 @@ export default class SubmissionJob {
         console.log('Submission Job handler triggered');
         if(job) {
             const key = Object.keys(this.payload)[0];
-            if(this.payload[key].language === 'JAVA') {
-                const code = this.payload[key].code;
-                const inputTestCases = this.payload[key].inputTestCases;
-                const response = await runJava(code, inputTestCases);
-                console.log('Evaluated response is: ', response);
+            const language = this.payload[key].language;
+            const code = this.payload[key].code;
+            const inputTestCases = this.payload[key].inputTestCases;
+            const strategy = createCodeExecutor(language);
+
+            if(strategy) {
+                const response: ExecutionResponse = await strategy.execute(code, inputTestCases);
+                if(response.status == 'COMPLETED') {
+                    console.log('Code executed successfully.');
+                    console.log(response);
+                } else {
+                    console.log('Something went wrong while executing the code');
+                    console.log(response);
+                }
             }
         }
     }
