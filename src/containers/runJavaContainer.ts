@@ -6,13 +6,15 @@ import CodeExecutorStrategy, { ExecutionResponse } from "../types/codeExecutorSt
 
 
 class JavaExecutor implements CodeExecutorStrategy {
-    async execute(code: string, inputTestCase: string): Promise<ExecutionResponse> {
+    async execute(code: string, inputTestCases: string, outputTestCases: string): Promise<ExecutionResponse> {
         const rawLogBuffer: Buffer[] = [];
+
+        console.log(code, inputTestCases, outputTestCases);
 
         await pullImage(JAVA_IMAGE);
         console.log('Initializing a Java container');
 
-        const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > Main.java && javac Main.java && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | java Main`;
+        const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > Main.java && javac Main.java && echo '${inputTestCases.replace(/'/g, `'\\"`)}' | java Main`;
         console.log(runCommand);
 
         const javaDockerContainer = await createContainer(JAVA_IMAGE, ['bin/sh', '-c', runCommand]);
@@ -41,12 +43,12 @@ class JavaExecutor implements CodeExecutorStrategy {
     }
 
     fetchDecodedStream(loggerStream: NodeJS.ReadableStream, rawLogBuffer: Buffer[]): Promise<string> {
-        return new Promise((res) => {
+        return new Promise((res, rej) => {
             loggerStream.on('end', () => {
                 const completeBuffer = Buffer.concat(rawLogBuffer);
                 const decodedStream = decodeDockerStream(completeBuffer);
                 if (decodedStream.stderr) {
-                    res(decodedStream.stderr);
+                    rej(decodedStream.stderr);
                 } else {
                     res(decodedStream.stdout);
                 }

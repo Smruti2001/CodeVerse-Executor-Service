@@ -6,7 +6,7 @@ import apiRouter from "./routes";
 import SampleWorker from "./workers/sampleWorker";
 import serverAdapter from "./config/bullBoardConfig";
 import SubmissionWorker from "./workers/submissionWorker";
-import submissionQueueProducer from "./producers/submissionQueueProducer";
+// import submissionQueueProducer from "./producers/submissionQueueProducer";
 
 const app = express();
 
@@ -30,26 +30,26 @@ app.listen(serverConfig.PORT, () => {
     //     comapny: 'Google'
     // });
 
-    const code = `
-    import java.util.*;
-    public class Main {
-        public static void main(String args[]) {
-            Scanner sc = new Scanner(System.in);
-            int input = sc.nextInt();
-            for(int i=0;i<input;i++) {
-                System.out.print(i + " ");
-            }
-        }
-    }
-    `
-    const inputTestCases = '10';
+    // const code = `
+    // import java.util.*;
+    // public class Main {
+    //     public static void main(String args[]) {
+    //         Scanner sc = new Scanner(System.in);
+    //         int input = sc.nextInt();
+    //         for(int i=0;i<input;i++) {
+    //             System.out.print(i + " ");
+    //         }
+    //     }
+    // }
+    // `
+    // const inputTestCases = '10';
 
-    submissionQueueProducer({
-        "1234": {
-            code,
-            inputTestCases,
-            language: 'JAVA'
-        }
-    })
+    // submissionQueueProducer({
+    //     "1234": {
+    //         code,
+    //         inputTestCases,
+    //         language: 'JAVA'
+    //     }
+    // })
 
 });

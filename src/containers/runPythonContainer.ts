@@ -6,13 +6,15 @@ import pullImage from "./pullImage";
 
 
 class PythonExecutor implements CodeExecutorStrategy {
-    async execute(code: string, inputTestCase: string): Promise<ExecutionResponse> {
+    async execute(code: string, inputTestCases: string, outputTestCases: string): Promise<ExecutionResponse> {
         const rawLogBuffer: Buffer[] = [];
+
+        console.log(code, inputTestCases, outputTestCases);
 
         await pullImage(PYTHON_IMAGE);
         console.log('Initializing the python container');
 
-        const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > test.py && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | python3 test.py`;
+        const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > test.py && echo '${inputTestCases.replace(/'/g, `'\\"`)}' | python3 test.py`;
         console.log(runCommand);
 
         // const pythonDockerContainer = await createContainer(PYTHON_IMAGE, ['python3', '-c', code, 'stty -echo']);
@@ -44,12 +46,12 @@ class PythonExecutor implements CodeExecutorStrategy {
     }
 
     fetchDecodedStream(loggerStream: NodeJS.ReadableStream, rawLogBuffer: Buffer[]): Promise<string> {
-        return new Promise((res) => {
+        return new Promise((res, rej) => {
             loggerStream.on('end', () => {
                 const completeBuffer = Buffer.concat(rawLogBuffer);
                 const decodedStream = decodeDockerStream(completeBuffer);
                 if (decodedStream.stderr) {
-                    res(decodedStream.stderr);
+                    rej(decodedStream.stderr);
                 } else {
                     res(decodedStream.stdout);
                 }

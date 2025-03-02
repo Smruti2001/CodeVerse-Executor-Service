@@ -18,10 +18,11 @@ export default class SubmissionJob {
             const language = this.payload[key].language;
             const code = this.payload[key].code;
             const inputTestCases = this.payload[key].inputTestCases;
+            const outputTestCases = this.payload[key].outputTestCases;
             const strategy = createCodeExecutor(language);
 
             if(strategy) {
-                const response: ExecutionResponse = await strategy.execute(code, inputTestCases);
+                const response: ExecutionResponse = await strategy.execute(code, inputTestCases, outputTestCases);
                 if(response.status == 'COMPLETED') {
                     console.log('Code executed successfully.');
                     console.log(response);

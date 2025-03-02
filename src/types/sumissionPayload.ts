@@ -1,5 +1,6 @@
 export type SubmissionPayload = {
     code: string,
+    language: string,
     inputTestCases: string, 
-    language: string
+    outputTestCases: string
 }
