@@ -34,8 +34,18 @@ class CppExecutor implements CodeExecutorStrategy {
 
         try {
             const codeResponse: string = await this.fetchDecodedStream(loggerStream, rawLogBuffer);
-            return { output: codeResponse, status: 'COMPLETED' };
+            
+            // Test case matching
+            if(codeResponse.trim() === outputTestCases.trim()) {
+                return { output: codeResponse, status: 'SUCCESS' };
+            } else {
+                return { output: codeResponse, status: 'WA' };
+            }
+
         } catch (error) {
+            if(error == 'TLE') {
+                await cppDockerContainer.kill(); // Kill the container if TLE occurs
+            }
             return { output: error as string, status: 'ERROR' }
         } finally {
             await cppDockerContainer.remove();
@@ -45,7 +55,14 @@ class CppExecutor implements CodeExecutorStrategy {
 
     fetchDecodedStream(loggerStream: NodeJS.ReadableStream, rawLogBuffer: Buffer[]): Promise<string> {
         return new Promise((res, rej) => {
+            
+            const timeOut = setTimeout(() => {
+                console.log('Time limit exceeded');
+                rej('TLE');
+            }, 2000);
+
             loggerStream.on('end', () => {
+                clearTimeout(timeOut);
                 const completeBuffer = Buffer.concat(rawLogBuffer);
                 const decodedStream = decodeDockerStream(completeBuffer);
                 if (decodedStream.stderr) {

@@ -23,7 +23,7 @@ export default class SubmissionJob {
 
             if(strategy) {
                 const response: ExecutionResponse = await strategy.execute(code, inputTestCases, outputTestCases);
-                if(response.status == 'COMPLETED') {
+                if(response.status == 'SUCCESS') {
                     console.log('Code executed successfully.');
                     console.log(response);
                 } else {

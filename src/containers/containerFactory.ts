@@ -10,6 +10,9 @@ async function createContainer(imageName: string, cmdExecutable: string[]) {
         AttachStdout: true, // to enable output streams
         AttachStderr: true, // to enable error streams
         Tty: false,
+        HostConfig: { // Setting a memory limit for the Docker
+            Memory: 1024 * 1024 * 512 // 512 MB
+        },
         OpenStdin: true // Keep the input stream up even if we are not interacting with it. Similar to that of the -it flag of docker where i ensures to keep the stdin up
     });
 
